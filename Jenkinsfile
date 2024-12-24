@@ -1,11 +1,13 @@
 pipeline {
     agent any
-    stages {
-        stage('Build') {
+	stages {
+        stage('Checkout Code') {
             steps {
-                echo 'Building...'
+                // Checkout the repository code
+                git 'https://github.com/Kshitiz4S/test.git'
             }
         }
+
         stage('Test') {
             steps {
                 echo 'Testing...'

@@ -12,6 +12,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 https://github.com/Kshitiz4S/test.git
+		}
             }
         }
 

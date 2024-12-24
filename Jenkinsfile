@@ -12,8 +12,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git 'https://github.com/Kshitiz4S/test.git'
-		}
-            }
+	       }
         }
 
 	stage('Deploy with Docker Compose') {

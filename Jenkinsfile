@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                'git@github.com:Kshitiz4S/test.git', branch: 'staging'
+                git@github.com:Kshitiz4S/test.git
             }
         }
 

@@ -4,7 +4,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 // Checkout the repository code
-                git 'https://github.com/Kshitiz4S/test'
+                git 'https://github.com/Kshitiz4S/test.git'
             }
         }
 

@@ -13,6 +13,7 @@ pipeline {
             steps {
                 git branch: 'staging', url: 'https://github.com/Kshitiz4S/test.git'
         }
+}
 
 	stage('Deploy with Docker Compose') {
 	    steps {
@@ -64,7 +65,7 @@ pipeline {
                 sh 'sudo docker rmi ${DB_IMAGE_NAME}:latest'
             }
         }
-    }
+    
 
     stage('Deploy Test') {
             steps {

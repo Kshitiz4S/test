@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-    image: nextjs-dev
+    image: nextjs-app
     ports:
       - "3000:3000"
     environment:

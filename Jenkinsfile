@@ -5,21 +5,18 @@ pipeline {
         DOCKER_HUB_USERNAME = 'kshitiz182'   // Set this as your Docker Hub username
         APP_IMAGE_NAME = 'nextjs-app'        // Name for the app Docker image (e.g., "myapp")
         DB_IMAGE_NAME = 'nextjs-db'          // Name for the database Docker image (e.g., "mydb")
-        IMAGE_TAG = "V:${BUILD_NUMBER}"      // Tag to push, you can use something dynamic like "build-${BUILD_NUMBER}" if you prefer
+        IMAGE_TAG = "V:${BUILD_NUMBER}"      // Tag to push
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('GIT SCM Checkout') {
             steps {
-                git 'https://github.com/Kshitiz4S/test.git', branch: 'staging'
-	       }
+                git branch: 'staging', url: 'https://github.com/Kshitiz4S/test.git'
         }
 
 	stage('Deploy with Docker Compose') {
 	    steps {
-        	script {
-            	sh 'docker-compose up -d'
-       		}
+	         	sh 'sudo docker-compose up -d'
     	    }
 	}	
 
@@ -43,7 +40,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-id', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                        sh 'sudo docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
                     }
                 }
             }
@@ -52,27 +49,39 @@ pipeline {
 	stage('Push Docker Images to Docker Hub') {
             steps {
                 script {
-                    sh "docker tag ${APP_IMAGE_NAME}:latest ${DOCKER_HUB_USERNAME}/${APP_IMAGE_NAME}:${IMAGE_TAG}"
-                    sh "docker push ${DOCKER_HUB_USERNAME}/${APP_IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "sudo docker tag ${APP_IMAGE_NAME}:latest ${DOCKER_HUB_USERNAME}/${APP_IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "sudo docker push ${DOCKER_HUB_USERNAME}/${APP_IMAGE_NAME}:${IMAGE_TAG}"
 
-                    sh "docker tag ${DB_IMAGE_NAME}:latest ${DOCKER_HUB_USERNAME}/${DB_IMAGE_NAME}:${IMAGE_TAG}"
-                    sh "docker push ${DOCKER_HUB_USERNAME}/${DB_IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "sudo docker tag ${DB_IMAGE_NAME}:latest ${DOCKER_HUB_USERNAME}/${DB_IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "sudo docker push ${DOCKER_HUB_USERNAME}/${DB_IMAGE_NAME}:${IMAGE_TAG}"
                 }
             }
         }
 
         stage('Clean Up') {
             steps {
-                sh 'docker rmi ${APP_IMAGE_NAME}:latest'
-                sh 'docker rmi ${DB_IMAGE_NAME}:latest'
+                sh 'sudo docker rmi ${APP_IMAGE_NAME}:latest'
+                sh 'sudo docker rmi ${DB_IMAGE_NAME}:latest'
             }
         }
     }
 
-    post {
-        always {
-            sh 'docker system prune -f'
+    stage('Deploy Test') {
+            steps {
+                echo 'Connecting to test server'
+                sh """
+                    ssh vagrant@192.168.56.33 "
+                    
+                    sudo apt update &&
+                    sudo apt install docker.io -y
+                    
+                    sudo docker pull kshitiz182/nextjs-app:v1
+                    
+                    sudo docker run -idt -p 3000:3000 --name Nextjs-Project kshitiz182/nextjs-app:v1
+                    "
+                """
+            }
         }
-    }
 }
+
 

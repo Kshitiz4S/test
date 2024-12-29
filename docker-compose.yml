@@ -1,6 +1,7 @@
 services:
   app:
-    image: kshitiz182/nextjs-app-dev:latest
+    build:
+      context: .
     container_name: nextjs-app-dev
     ports:
       - "3000:3000"

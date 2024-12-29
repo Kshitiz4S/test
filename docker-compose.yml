@@ -1,10 +1,12 @@
 services:
   app:
+    container_name: nextjs-app-dev
     build:
       context: .
-    image: nextjs-app-dev
     ports:
       - "3000:3000"
+    networks:
+      - next-network
     environment:
       NODE_ENV: development
     depends_on:
@@ -19,8 +21,14 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - next-network
     ports:
       - "5432:5432"
 
 volumes:
   postgres_data:
+
+networks:
+  next-network:
+    driver: bridge
